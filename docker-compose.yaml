@@ -1,0 +1,14 @@
+networks:
+  mf:
+    external: true
+
+services:
+  postgresql:
+    image: postgresql
+    build:
+      context: .
+      dockerfile: docker/postgres/Dockerfile
+    container_name: mf-postgresql
+    command: postgres
+    networks:
+      - mf

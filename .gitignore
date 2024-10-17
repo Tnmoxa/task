@@ -68,3 +68,6 @@ docs/_build/
 
 # Pyenv
 .python-version
+
+docker-compose.override.yml
+.env
