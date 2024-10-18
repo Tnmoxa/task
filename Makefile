@@ -17,9 +17,9 @@ init:
 	sudo docker compose build
 	sudo docker compose up -d
 	sudo docker compose stop
+	sudo docker run -d --name redis-stack -p 6379:6379 -p 8001:8001 redis/redis-stack:latest
 
 start:
 	sudo docker compose up -d
 	source $(VENV)/bin/activate && cd backend && alembic upgrade head
-	sudo docker run -d --name redis-stack -p 6379:6379 -p 8001:8001 redis/redis-stack:latest
 	source $(VENV)/bin/activate && uvicorn backend.mindfus.backend:app
