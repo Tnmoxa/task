@@ -5,6 +5,7 @@ from uuid import UUID, uuid4
 import mindfus.database.api_models as am
 import mindfus.database.storage_models as sm
 from mindfus.dependencies import ACCESS_TOKEN_EXPIRE_MINUTES, database, storage
+from mindfus.backend.utils import get_current_user_by_session
 
 import redis.asyncio as redis
 from fastapi import Depends, FastAPI, HTTPException, status
@@ -19,9 +20,16 @@ async def create_user(user: am.User, db: AsyncSession = Depends(database)):
     check_acc = (await db.execute(select(sm.User).where(sm.User.email == user.email))).scalar_one_or_none()
     if check_acc:
         raise HTTPException(status_code=404, detail='Account already exists')
-    user = sm.User(**user.dict())
-    await db.merge(user)
+    print(user)
+    user_instance = sm.User(
+        email=user.email,
+        first_name=user.first_name,
+        last_name=user.last_name,
+        password=user.password
+    )
+    db.add(user_instance)
     await db.commit()
+    await db.refresh(user_instance)
 
 
 @app.post("/authentication")
@@ -45,22 +53,7 @@ async def authentication(user_form: am.UserPartial, db: AsyncSession = Depends(d
     session_key = uuid4()
 
     await redis_storage.setex(f"session:{session_key}", session_expires, user.email)
-    return am.Session(email=user.email, session_id=session_key)
-
-
-async def get_current_user_by_session(session_key: UUID, redis_storage: redis.Redis = Depends(storage)):
-    user_email = await redis_storage.get(f"session:{session_key}")
-
-    if not user_email:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid session or session expired",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    session_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-
-    await redis_storage.setex(f"session:{session_key}", session_expires, user_email)
-    return user_email.decode('utf-8')
+    return am.Session(email=user.email, session_key=session_key)
 
 
 @app.get("/user")

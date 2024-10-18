@@ -3,25 +3,32 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
+import Badge from '@mui/material/Badge';
+import MailIcon from '@mui/icons-material/Mail';
+import IconButton from '@mui/material/IconButton';
 import { useNavigate } from 'react-router-dom';
-import {accountStore} from "../stores";
+import {accountStore, messageStore} from "../stores";
+import {observer} from "mobx-react-lite";
 
-function ResponsiveAppBar() {
+const ResponsiveAppBar = observer(() => {
     const navigate = useNavigate();
+    const {inbox} = messageStore
     const { signOff } = accountStore
 
     const handleRegistration = () => {
-        console.log('Регистрация')
         navigate('/sign-up')
     };
 
     const handleAuthorization = () => {
-        console.log('Авторизация')
         navigate('/sign-in')
     };
 
     const handleExit = () => {
         signOff()
+    };
+
+    const handleMail = () => {
+        navigate('/mail')
     };
 
     return (
@@ -48,9 +55,17 @@ function ResponsiveAppBar() {
                             Выход
                         </Button>
                     </Box>
+                    <Box sx={{ flexGrow: 1 }} />
+                    <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+                        <IconButton size="large" color="inherit" onClick={handleMail}>
+                            <Badge badgeContent={inbox.filter(message => !message.checked).length} color="error">
+                                <MailIcon />
+                            </Badge>
+                        </IconButton>
+                    </Box>
                 </Toolbar>
             </Container>
         </AppBar>
     );
-}
+})
 export default ResponsiveAppBar;

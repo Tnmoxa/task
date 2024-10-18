@@ -1,4 +1,3 @@
-// import { base58 } from "@scure/base";
 import { fastFetch } from "./fastapi";
 
 export interface AccountInfo {
@@ -15,7 +14,11 @@ export interface AccountType {
 
 export async function fetchAccountInfo(session_key: string) {
     try {
-        return await fastFetch<AccountInfo>(`http://localhost:8000/auth/user?session_key=${session_key}`);
+        const requestObject = new Request(`http://localhost:8000/auth/user?session_key=${session_key}`, {
+            method: "GET",
+        });
+        return await fastFetch<AccountInfo>(requestObject);
+
     } catch (error) {
         console.error("Cannot get account address", error);
         throw error;
@@ -23,7 +26,6 @@ export async function fetchAccountInfo(session_key: string) {
 }
 
 export async function fetchAccountCreate(account: AccountType) {
-
     try {
         const requestObject = new Request(`http://localhost:8000/auth/registration`, {
             method: "POST",

@@ -1,3 +1,4 @@
+import {accountStore} from "../stores";
 export class FastError extends Error {
   public readonly status: number;
   public readonly extra: unknown;
@@ -21,6 +22,7 @@ export async function fastFetch<T>(url: string | Request) {
     }
   else
     try {
+      sessionStorage.removeItem("session");
       extra = await res.json();
     } catch (error) {
       /**/

@@ -1,7 +1,26 @@
+from datetime import datetime
 from uuid import UUID
 
 import bcrypt
 from pydantic import model_validator, BaseModel
+
+
+class Message(BaseModel):
+    content: str
+    recipient_mail: str
+
+
+class MessageResponse(BaseModel):
+    id: int
+    content: str
+    timestamp: datetime
+    companion: str
+    checked: bool
+
+
+class MessageRequest(BaseModel):
+    content: str
+    recipient: str
 
 
 class User(BaseModel):
@@ -29,4 +48,4 @@ class UserPartial(BaseModel):
 
 class Session(BaseModel):
     email: str
-    session_id: UUID
+    session_key: UUID

@@ -52,6 +52,7 @@ class _AccountStore implements AccountStore {
     try {
       fetchAccountAuthentication({email, password}).then((res: any) => {
         sessionStorage.setItem("session", JSON.stringify({ email: email, session_key: res.session_key }));
+        this.update().then();
       });
     } catch (error) {
       console.error("Cannot signin account", error);
@@ -66,23 +67,27 @@ class _AccountStore implements AccountStore {
   }
 
   async update() {
-    let account: AccountInfo | undefined = undefined;
     const session = sessionStorage.getItem("session");
     if (session) {
       try {
         const { email, session_key } = JSON.parse(session);
-        account = { email, session_key };
-        await fetchAccountInfo(session_key);
+        const a = await fetchAccountInfo(session_key);
+        const account = JSON.parse(session)
+        runInAction(() => {
+          this.account = account;
+        })
       } catch (error) {
         // @ts-ignore
         if (error.status != 404)
+          this.signOff()
           runInAction(() => {
             this.error = error;
           });
       }
+    } else {
+      this.account = undefined
     }
     runInAction(() => {
-      this.account = account;
       this.error = undefined;
     });
   }

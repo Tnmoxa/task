@@ -7,7 +7,6 @@ const AccountStatus = observer(() => {
 
   const { account, error } = accountStore;
 
-  const title = "Статус учетной записи";
     if (account) {
         return (
         <AccountInfo account={account}>
