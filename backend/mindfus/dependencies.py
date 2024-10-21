@@ -18,14 +18,14 @@ class Database:
 
 
 class Storage:
-    def __init__(self):
-        self.client = redis.Redis()
+    def __init__(self, url):
+        self.client = redis.from_url(url)
 
     async def __call__(self):
         return self.client
 
 
 ALGORITHM = "HS256"
-storage = Storage()
+storage = Storage(os.environ.get('REDIS_URL'))
 database = Database(os.environ.get('DATABASE_URL'))
 ACCESS_TOKEN_EXPIRE_MINUTES = 2

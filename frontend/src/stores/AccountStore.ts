@@ -1,6 +1,12 @@
 import { action, makeObservable, observable, runInAction } from "mobx";
 
-import {AccountInfo, fetchAccountInfo, fetchAccountCreate, fetchAccountAuthentication} from "../modules/account";
+import {
+  AccountInfo,
+  fetchAccountInfo,
+  fetchAccountCreate,
+  fetchAccountAuthentication,
+  fetchAccountDelete
+} from "../modules/account";
 
 export type { AccountInfo };
 
@@ -62,7 +68,21 @@ class _AccountStore implements AccountStore {
   }
 
   signOff() {
-    sessionStorage.removeItem("session");
+    try {
+      const session = sessionStorage.getItem("session");
+      if (session) {
+        const { email, session_key } = JSON.parse(session);
+        fetchAccountDelete(session_key).then((res: any) => {
+          sessionStorage.removeItem("session");
+          this.update().then();
+        });
+      } else {
+        console.warn("No session found during signOff");
+      }
+    } catch (error) {
+      console.error("Cannot sign off account", error);
+      throw error;
+    }
     this.update().then();
   }
 

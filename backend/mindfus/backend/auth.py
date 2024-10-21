@@ -20,7 +20,6 @@ async def create_user(user: am.User, db: AsyncSession = Depends(database)):
     check_acc = (await db.execute(select(sm.User).where(sm.User.email == user.email))).scalar_one_or_none()
     if check_acc:
         raise HTTPException(status_code=404, detail='Account already exists')
-    print(user)
     user_instance = sm.User(
         email=user.email,
         first_name=user.first_name,
@@ -59,3 +58,9 @@ async def authentication(user_form: am.UserPartial, db: AsyncSession = Depends(d
 @app.get("/user")
 async def session(user_email: str = Depends(get_current_user_by_session)):
     return user_email
+
+
+@app.delete("/exit")
+async def session(session_key: UUID, redis_storage: redis.Redis = Depends(storage)):
+    await redis_storage.delete(f"session:{session_key}")
+

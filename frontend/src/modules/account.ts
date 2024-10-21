@@ -14,7 +14,7 @@ export interface AccountType {
 
 export async function fetchAccountInfo(session_key: string) {
     try {
-        const requestObject = new Request(`http://localhost:8000/auth/user?session_key=${session_key}`, {
+        const requestObject = new Request(process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL  + `/auth/user?session_key=${session_key}` : `/api/auth/user?session_key=${session_key}`, {
             method: "GET",
         });
         return await fastFetch<AccountInfo>(requestObject);
@@ -24,10 +24,9 @@ export async function fetchAccountInfo(session_key: string) {
         throw error;
     }
 }
-
 export async function fetchAccountCreate(account: AccountType) {
     try {
-        const requestObject = new Request(`http://localhost:8000/auth/registration`, {
+        const requestObject = new Request(process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL  + `/auth/registration` : '/api/auth/registration', {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -43,7 +42,7 @@ export async function fetchAccountCreate(account: AccountType) {
 
 export async function fetchAccountAuthentication(account: {email: string; password: string;}) {
     try {
-        const requestObject = new Request(`http://localhost:8000/auth/authentication`, {
+        const requestObject = new Request(process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL  + `/auth/authentication` : '/api/auth/authentication', {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -53,6 +52,20 @@ export async function fetchAccountAuthentication(account: {email: string; passwo
         return await fastFetch<null>(requestObject);
     } catch (error) {
         console.error("Cannot post message", error);
+        throw error;
+    }
+}
+
+export async function fetchAccountDelete(session_key: string) {
+
+    try {
+        const requestObject = new Request(process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL  + `/auth/exit?session_key=${session_key}` : `/api/auth/exit?session_key=${session_key}`, {
+            method: "DELETE",
+        });
+        return await fastFetch<AccountInfo>(requestObject);
+
+    } catch (error) {
+        console.error("Cannot get account address", error);
         throw error;
     }
 }

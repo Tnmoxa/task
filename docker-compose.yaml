@@ -1,5 +1,6 @@
 networks:
   mf:
+    driver: bridge
     external: true
 
 services:
@@ -10,5 +11,48 @@ services:
       dockerfile: docker/postgres/Dockerfile
     container_name: mf-postgresql
     command: postgres
+    networks:
+      - mf
+
+  backend:
+    depends_on:
+      - alembic
+      - redis
+    build:
+      context: .
+      dockerfile: docker/backend/app/Dockerfile
+    container_name: mf-backend
+    networks:
+      - mf
+    ports:
+      - "8000:8000"
+
+  alembic:
+    depends_on:
+      - postgresql
+    build:
+      context: .
+      dockerfile: docker/backend/services/alembic/Dockerfile
+    container_name: mf-alembic
+    networks:
+      - mf
+
+  frontend:
+    depends_on:
+      - backend
+    build:
+      context: .
+      dockerfile: docker/frontend/Dockerfile
+    container_name: mf-frontend
+    networks:
+      - mf
+    ports:
+      - "80:80"
+
+  redis:
+    image: redis/redis-stack-server:latest
+    container_name: mf-redis
+    ports:
+      - "6379:6379"
     networks:
       - mf

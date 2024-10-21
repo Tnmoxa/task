@@ -1,0 +1,6 @@
+.dockerignore
+backend/.idea
+frontend/node_modules
+frontend/.env
+.env
+.idea

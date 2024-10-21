@@ -53,7 +53,6 @@ async def check_messages(message_id: int, user_email: str = Depends(get_current_
     )).scalars().one_or_none()
     if not message:
         raise HTTPException(status_code=404, detail='Message not found')
-    print(message)
     if message.sender_mail != user_email:
         HTTPException(
             status_code=401, detail='UNAUTHORIZED',
