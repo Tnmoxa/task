@@ -13,7 +13,7 @@ export interface MessageSendType {
 
 export async function fetchMessage(session_key: string){
     try {
-        return await fastFetch<Messages>( process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL  + `/message/?session_key=${session_key}` : `/api/message/?session_key=${session_key}`);
+        return await fastFetch<Messages>( `/api/message/?session_key=${session_key}`);
     } catch (error) {
         console.error("Cannot get account address", error);
         throw error;
@@ -22,7 +22,7 @@ export async function fetchMessage(session_key: string){
 
 export async function fetchCheckMessage(message_id: number, session_key: string){
     try {
-        return await fastFetch<MessageType[]>(process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL  + `/message/change_check?message_id=${message_id}&session_key=${session_key}` : `/api/message/change_check?message_id=${message_id}&session_key=${session_key}`);
+        return await fastFetch<MessageType[]>(`/api/message/change_check?message_id=${message_id}&session_key=${session_key}`);
     } catch (error) {
         console.error("Cannot get account address", error);
         throw error;
@@ -33,7 +33,7 @@ export async function fetchCheckMessage(message_id: number, session_key: string)
 export async function fetchMessageSend(message: MessageSendType, session_key: string) {
 
     try {
-        const requestObject = new Request(process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL  + `/message?session_key=${session_key}` : `/api/message?session_key=${session_key}`, {
+        const requestObject = new Request(`/api/message/?session_key=${session_key}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -50,7 +50,7 @@ export async function fetchMessageSend(message: MessageSendType, session_key: st
 export async function fetchMessageDelete(arr: number[], session_key: string) {
 
     try {
-        const requestObject = new Request(process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL  + `/message?session_key=${session_key}` : `/api/message?session_key=${session_key}`, {
+        const requestObject = new Request(`/api/message/?session_key=${session_key}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",

@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from mindfus.backend import auth, message
 from starlette.middleware.cors import CORSMiddleware
 
-app = FastAPI(root_path="/api")
+app = FastAPI(redirect_slashes=False, root_path="/api")
 
 app.add_middleware(
     CORSMiddleware,

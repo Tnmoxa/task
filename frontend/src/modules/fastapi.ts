@@ -22,7 +22,7 @@ export async function fastFetch<T>(url: string | Request) {
     }
   else
     try {
-      sessionStorage.removeItem("session");
+      localStorage.removeItem("session");
       extra = await res.json();
     } catch (error) {
       /**/
