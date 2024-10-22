@@ -8,7 +8,7 @@ export interface AccountInfo {
 export interface AccountType {
     email: string;
     first_name: string;
-    last_name: string | null;
+    tg_id: string | null;
     password: string;
 }
 

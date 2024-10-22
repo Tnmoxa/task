@@ -8,9 +8,11 @@ from sqlalchemy import delete
 
 import mindfus.database.api_models as am
 import mindfus.database.storage_models as sm
-from mindfus.backend.utils import get_current_user_by_session
-from mindfus.dependencies import database
+from mindfus.backend.utils import get_current_user_by_session, get_active_sessions
+from mindfus.celery.celery_app import send_tg_message
+from mindfus.dependencies import database, storage
 
+import redis.asyncio as redis
 from fastapi import Depends, FastAPI
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -64,7 +66,7 @@ async def check_messages(message_id: int, user_email: str = Depends(get_current_
 
 @app.post("/")
 async def save_messages(message: am.MessageRequest, user_email: str = Depends(get_current_user_by_session),
-                        db: AsyncSession = Depends(database)):
+                        db: AsyncSession = Depends(database), redis_storage: redis.Redis = Depends(storage)):
     check_acc = (await db.execute(select(sm.User).where(sm.User.email == message.recipient))).scalar_one_or_none()
     if not check_acc:
         raise HTTPException(status_code=404, detail='Account not found')
@@ -75,8 +77,13 @@ async def save_messages(message: am.MessageRequest, user_email: str = Depends(ge
         recipient_mail=message.recipient
     )
 
+    if not (await get_active_sessions(message.recipient, redis_storage)):
+        send_tg_message.delay(user_email, message.content, check_acc.tg_id)
+
     db.add(new_message)
     await db.commit()
+
+
 
 
 @app.delete("/")

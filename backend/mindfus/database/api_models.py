@@ -26,7 +26,7 @@ class MessageRequest(BaseModel):
 class User(BaseModel):
     email: str
     first_name: str
-    last_name: str | None = None
+    tg_id: str | None = None
     password: str
 
     @model_validator(mode='after')

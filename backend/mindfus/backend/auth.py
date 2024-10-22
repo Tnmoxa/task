@@ -23,7 +23,7 @@ async def create_user(user: am.User, db: AsyncSession = Depends(database)):
     user_instance = sm.User(
         email=user.email,
         first_name=user.first_name,
-        last_name=user.last_name,
+        tg_id=user.tg_id,
         password=user.password
     )
     db.add(user_instance)
@@ -52,6 +52,8 @@ async def authentication(user_form: am.UserPartial, db: AsyncSession = Depends(d
     session_key = uuid4()
 
     await redis_storage.setex(f"session:{session_key}", session_expires, user.email)
+    await redis_storage.sadd(f"user_sessions:{user.email}", str(session_key))
+
     return am.Session(email=user.email, session_key=session_key)
 
 

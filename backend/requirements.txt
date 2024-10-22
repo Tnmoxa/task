@@ -8,4 +8,6 @@ psycopg2-binary
 PyJWT
 bcrypt
 python-multipart
-redis~=5.1.0
+redis
+aiogram
+celery[redis]

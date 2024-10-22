@@ -16,7 +16,7 @@ export interface AccountStore {
   error?: unknown;
 
   /// Регистрация
-  signUp(email: string, first_name: string, last_name: string | '', password: string): Promise<void>;
+  signUp(email: string, first_name: string, tg_id: string | '', password: string): Promise<void>;
 
 
   /// Логин
@@ -42,9 +42,9 @@ class _AccountStore implements AccountStore {
     });
   }
 
-  async signUp(email: string, first_name: string, last_name: string | '', password: string) {
+  async signUp(email: string, first_name: string, tg_id: string | '', password: string) {
     try {
-      fetchAccountCreate({email, first_name, last_name, password}).then(() => {
+      fetchAccountCreate({email, first_name, tg_id, password}).then(() => {
         this.signIn(email, password);
       });
     } catch (error) {

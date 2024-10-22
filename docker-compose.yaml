@@ -21,6 +21,7 @@ services:
     build:
       context: .
       dockerfile: docker/backend/app/Dockerfile
+    command: "uvicorn mindfus.backend:app --host 0.0.0.0 --port 8000"
     container_name: mf-backend
     networks:
       - mf
@@ -32,7 +33,8 @@ services:
       - postgresql
     build:
       context: .
-      dockerfile: docker/backend/services/alembic/Dockerfile
+      dockerfile: docker/backend/app/Dockerfile
+    command: "alembic upgrade head"
     container_name: mf-alembic
     networks:
       - mf
@@ -54,5 +56,16 @@ services:
     container_name: mf-redis
     ports:
       - "6379:6379"
+    networks:
+      - mf
+
+  celery:
+    depends_on:
+      - redis
+    build:
+      context: .
+      dockerfile: docker/backend/app/Dockerfile
+    command: "celery -A mindfus.celery.celery_app worker"
+    container_name: mf-celery
     networks:
       - mf

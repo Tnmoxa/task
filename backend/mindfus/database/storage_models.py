@@ -17,7 +17,7 @@ class User(Base):
 
     email: Mapped[str] = mapped_column(primary_key=True)
     first_name: Mapped[str] = mapped_column(nullable=False)
-    last_name: Mapped[str] = mapped_column()
+    tg_id: Mapped[str] = mapped_column()
     password: Mapped[str] = mapped_column(nullable=False)
 
 class Message(Base):

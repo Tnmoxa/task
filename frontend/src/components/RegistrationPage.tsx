@@ -13,12 +13,12 @@ const RegistrationPage = observer(() =>  {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
+    const [tgId, setTgId] = useState('');
     const [password, setPassword] = useState('');
 
     const handleSubmit = async (event: { preventDefault: () => void; }) => {
         event.preventDefault()
-        await signUp(email, firstName, lastName, password);
+        await signUp(email, firstName, tgId, password);
         navigate('/')
     };
 
@@ -68,12 +68,11 @@ const RegistrationPage = observer(() =>  {
                         margin="normal"
                         required
                         fullWidth
-                        id="lastName"
-                        label="Фамилия"
-                        name="lastName"
-                        autoComplete="family-name"
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
+                        id="tgId"
+                        label="Id Телеграмм"
+                        name="tgId"
+                        value={tgId}
+                        onChange={(e) => setTgId(e.target.value)}
                     />
                     <TextField
                         margin="normal"
