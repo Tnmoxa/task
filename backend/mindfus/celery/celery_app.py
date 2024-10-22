@@ -1,10 +1,10 @@
 import asyncio
 import os
 
-from celery import Celery
 from aiogram import Bot
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
+from celery import Celery
 
 bot = Bot(token=os.environ.get('TOKEN'), default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 
@@ -15,6 +15,7 @@ app = Celery(
 )
 
 
+# Отправка сообщения в телеграм
 @app.task(name="mindfus.backend.utils.send_tg_message")
 def send_tg_message(author, message, chat_id):
     try:

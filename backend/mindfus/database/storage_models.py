@@ -1,9 +1,9 @@
 from datetime import datetime
 
 import pydantic
-from sqlalchemy import ForeignKey
 from sqlalchemy import Boolean
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.orm import MappedAsDataclass, DeclarativeBase
 
 
@@ -11,6 +11,7 @@ class Base(DeclarativeBase, MappedAsDataclass, dataclass_callable=pydantic.datac
     pass
 
 
+# Таблица пользователей
 class User(Base):
     """ User's table """
     __tablename__ = 'users'
@@ -20,6 +21,8 @@ class User(Base):
     tg_id: Mapped[str] = mapped_column()
     password: Mapped[str] = mapped_column(nullable=False)
 
+
+# Таблица сообщений
 class Message(Base):
     """ Messages table """
     __tablename__ = 'messages'
@@ -31,5 +34,3 @@ class Message(Base):
     timestamp: Mapped[datetime] = mapped_column(default=datetime.now())
 
     checked: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
-
-

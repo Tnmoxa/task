@@ -1,12 +1,13 @@
-import asyncio
+from datetime import timedelta
 from datetime import timedelta
 from uuid import UUID
 
-from mindfus.dependencies import ACCESS_TOKEN_EXPIRE_MINUTES, database, storage
 import redis.asyncio as redis
 from fastapi import Depends, HTTPException, status
+from mindfus.dependencies import ACCESS_TOKEN_EXPIRE_MINUTES, storage
 
 
+# Проверка действительности сессионного ключа
 async def get_current_user_by_session(session_key: UUID, redis_storage: redis.Redis = Depends(storage)):
     user_email = await redis_storage.get(f"session:{session_key}")
 
@@ -22,6 +23,7 @@ async def get_current_user_by_session(session_key: UUID, redis_storage: redis.Re
     return user_email.decode('utf-8')
 
 
+# Получение списка сессий пользователя
 async def get_active_sessions(user_email, redis_storage: redis.Redis):
     session_ids = await redis_storage.smembers(f"user_sessions:{user_email}")
     active_sessions = []

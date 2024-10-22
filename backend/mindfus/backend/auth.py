@@ -4,17 +4,17 @@ from uuid import UUID, uuid4
 
 import mindfus.database.api_models as am
 import mindfus.database.storage_models as sm
-from mindfus.dependencies import ACCESS_TOKEN_EXPIRE_MINUTES, database, storage
-from mindfus.backend.utils import get_current_user_by_session
-
 import redis.asyncio as redis
 from fastapi import Depends, FastAPI, HTTPException, status
+from mindfus.backend.utils import get_current_user_by_session
+from mindfus.dependencies import ACCESS_TOKEN_EXPIRE_MINUTES, database, storage
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 app = FastAPI()
 
 
+# Регистрация пользователя
 @app.post("/registration")
 async def create_user(user: am.User, db: AsyncSession = Depends(database)):
     check_acc = (await db.execute(select(sm.User).where(sm.User.email == user.email))).scalar_one_or_none()
@@ -31,6 +31,7 @@ async def create_user(user: am.User, db: AsyncSession = Depends(database)):
     await db.refresh(user_instance)
 
 
+# Аутентификация пользователя, создание сессии
 @app.post("/authentication")
 async def authentication(user_form: am.UserPartial, db: AsyncSession = Depends(database),
                          redis_storage: redis.Redis = Depends(storage)):
@@ -57,12 +58,13 @@ async def authentication(user_form: am.UserPartial, db: AsyncSession = Depends(d
     return am.Session(email=user.email, session_key=session_key)
 
 
+# Проверка существования сессии
 @app.get("/user")
 async def session(user_email: str = Depends(get_current_user_by_session)):
     return user_email
 
 
+# Удаление сессии
 @app.delete("/exit")
 async def session(session_key: UUID, redis_storage: redis.Redis = Depends(storage)):
     await redis_storage.delete(f"session:{session_key}")
-

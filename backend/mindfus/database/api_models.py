@@ -5,11 +5,7 @@ import bcrypt
 from pydantic import model_validator, BaseModel
 
 
-class Message(BaseModel):
-    content: str
-    recipient_mail: str
-
-
+# Модель сообщения для отправки
 class MessageResponse(BaseModel):
     id: int
     content: str
@@ -18,11 +14,13 @@ class MessageResponse(BaseModel):
     checked: bool
 
 
+# Модель полученного сообщения
 class MessageRequest(BaseModel):
     content: str
     recipient: str
 
 
+# Полная модель пользователя для регистрации
 class User(BaseModel):
     email: str
     first_name: str
@@ -41,11 +39,13 @@ class User(BaseModel):
         return bcrypt.checkpw(password.encode('utf-8'), self.password.encode('utf-8'))
 
 
+# Частичная модель для аутентификации
 class UserPartial(BaseModel):
     email: str
     password: str
 
 
+# Модель сессии
 class Session(BaseModel):
     email: str
     session_key: UUID
