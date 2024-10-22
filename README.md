@@ -1,4 +1,5 @@
 # Запуск через докер
+Для запуска необходим docker-compose.override с паролем и переменными
 ```console
 $ docker-compose build
 ```
