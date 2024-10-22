@@ -4,7 +4,7 @@ from uuid import UUID
 
 import redis.asyncio as redis
 from fastapi import Depends, HTTPException, status
-from mindfus.dependencies import ACCESS_TOKEN_EXPIRE_MINUTES, storage
+from mindfus.dependencies import ACCESS_TOKEN_EXPIRE_SECONDS, storage
 
 
 # Проверка действительности сессионного ключа
@@ -17,7 +17,7 @@ async def get_current_user_by_session(session_key: UUID, redis_storage: redis.Re
             detail="Invalid session or session expired",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    session_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    session_expires = timedelta(seconds=ACCESS_TOKEN_EXPIRE_SECONDS)
 
     await redis_storage.setex(f"session:{session_key}", session_expires, user_email)
     return user_email.decode('utf-8')

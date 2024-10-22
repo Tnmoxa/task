@@ -24,6 +24,16 @@ export async function fetchAccountInfo(session_key: string) {
         throw error;
     }
 }
+
+export async function fetchAccounts(){
+    try {
+        return await fastFetch<{email:string}[]>( `/api/auth/get_users`);
+    } catch (error) {
+        console.error("Cannot get account list", error);
+        throw error;
+    }
+}
+
 export async function fetchAccountCreate(account: AccountType) {
     try {
         const requestObject = new Request('/api/auth/registration', {

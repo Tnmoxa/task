@@ -48,7 +48,7 @@ class _MessageStore implements MessageStore {
 
     async deleteMessage(arr: number[]) {
         try {
-            const session = localStorage.getItem("session");
+            const session = sessionStorage.getItem("session");
             if (session) {
                 const { email, session_key } = JSON.parse(session);
                 await fetchMessageDelete(arr, session_key)
@@ -65,7 +65,7 @@ class _MessageStore implements MessageStore {
 
     async sendMessage(content: string, recipient: string) {
         try {
-            const session = localStorage.getItem("session");
+            const session = sessionStorage.getItem("session");
             if (session) {
                 const { email, session_key } = JSON.parse(session);
                 await fetchMessageSend({content, recipient}, session_key)
@@ -81,7 +81,7 @@ class _MessageStore implements MessageStore {
 
     async checkMessage(id: number) {
         try {
-            const session = localStorage.getItem("session");
+            const session = sessionStorage.getItem("session");
             if (session) {
                 const { email, session_key } = JSON.parse(session);
                 await fetchCheckMessage(id, session_key);
@@ -98,7 +98,7 @@ class _MessageStore implements MessageStore {
     async update() {
         let inbox: MessageType[] = [];
         let outbox: MessageType[] = [];
-        const session = localStorage.getItem("session");
+        const session = sessionStorage.getItem("session");
         if (session) {
             try {
                 const { email, session_key } = JSON.parse(session);

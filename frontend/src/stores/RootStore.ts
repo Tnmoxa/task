@@ -15,6 +15,7 @@ export default class RootStore {
 
   startUpdating(): void {
       this.accountStore.update().then()
+      this.messageStore.update().then()
       this._sih.push(setInterval(() => this.messageStore.update(), 3000));
       this._sih.push(setInterval(() => this.accountStore.checkAccount(), 5000));
     }

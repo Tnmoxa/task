@@ -61,7 +61,7 @@ class _AccountStore implements AccountStore {
   async signIn(email:string, password: string) {
     try {
       fetchAccountAuthentication({email, password}).then((res: any) => {
-        localStorage.setItem("session", JSON.stringify({ email: email, session_key: res.session_key }));
+        sessionStorage.setItem("session", JSON.stringify({ email: email, session_key: res.session_key }));
         this.update().then();
       });
     } catch (error) {
@@ -73,11 +73,11 @@ class _AccountStore implements AccountStore {
 
   signOff() {
     try {
-      const session = localStorage.getItem("session");
+      const session = sessionStorage.getItem("session");
       if (session) {
         const { email, session_key } = JSON.parse(session);
         fetchAccountDelete(session_key).then((res: any) => {
-          localStorage.removeItem("session");
+          sessionStorage.removeItem("session");
           this.update().then();
         });
       } else {
@@ -92,7 +92,7 @@ class _AccountStore implements AccountStore {
 
   checkAccount(){
     try {
-      const session = localStorage.getItem("session");
+      const session = sessionStorage.getItem("session");
       if (session) {
         const { email, session_key } = JSON.parse(session);
         fetchAccountInfo(session_key).then()
@@ -108,7 +108,7 @@ class _AccountStore implements AccountStore {
   }
 
   async update() {
-    const session = localStorage.getItem("session");
+    const session = sessionStorage.getItem("session");
     if (session) {
       try {
         const account = JSON.parse(session)

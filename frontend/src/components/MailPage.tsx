@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Container,
     Table,
@@ -15,7 +15,10 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    TextField
+    TextField,
+    List,
+    ListItem,
+    ListItemText
 } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
@@ -23,6 +26,7 @@ import {MessageType} from "../stores/MessageStore";
 import {accountStore, messageStore} from "../stores";
 import {observer} from "mobx-react-lite";
 import {date_converter} from "../modules/utils";
+import {fetchAccounts} from "../modules/account";
 
 const MailComponent = observer(() =>  {
     const [selectedFolder, setSelectedFolder] = useState('inbox');
@@ -35,6 +39,9 @@ const MailComponent = observer(() =>  {
 
     const {account} = accountStore;
     const { inbox, outbox, checkMessage, sendMessage, deleteMessage } = messageStore;
+    const [users, setUsers] = useState([]);
+
+
 
     const handleRowClick = (message: MessageType) => {
         if (selectedFolder === 'inbox' && !message.checked) {
@@ -116,7 +123,15 @@ const MailComponent = observer(() =>  {
         setSelectedMessages([]);
     };
 
+    useEffect(() => {
+         // @ts-ignore
+        fetchAccounts().then(data => setUsers(data))
+            .catch(error => console.error('Ошибка при получении списка пользователей:', error));
+    }, []);
 
+
+    // @ts-ignore
+    // @ts-ignore
     return (
         <Container maxWidth="lg" sx={{ display: 'flex', backgroundColor: '#F1F1E8', padding: 2, border: '1px solid #D3C4B1' }}>
             {/* Sidebar */}
@@ -138,6 +153,18 @@ const MailComponent = observer(() =>  {
                     <Button variant="contained" fullWidth onClick={() => handleOpenMessageForm()}>
                         Новое сообщение
                     </Button>
+                </Grid>
+                <Grid item xs={12}>
+                    <Typography variant="h6">Пользователи:</Typography>
+                    <List>
+                        {users.map((user, index) => (
+                            // @ts-ignore
+                            <ListItem key={index} button onClick={() => handleOpenMessageForm(user.email)}>
+                                {// @ts-ignore
+                                <ListItemText primary={user.email} />}
+                            </ListItem>
+                        ))}
+                    </List>
                 </Grid>
             </Grid>
 

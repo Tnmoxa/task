@@ -31,4 +31,4 @@ ALGORITHM = "HS256"
 storage = Storage(os.environ.get('REDIS_URL'))
 database = Database(os.environ.get('DATABASE_URL'))
 # Время существования сессии
-ACCESS_TOKEN_EXPIRE_MINUTES = 2
+ACCESS_TOKEN_EXPIRE_SECONDS= 7

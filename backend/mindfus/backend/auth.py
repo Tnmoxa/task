@@ -7,7 +7,7 @@ import mindfus.database.storage_models as sm
 import redis.asyncio as redis
 from fastapi import Depends, FastAPI, HTTPException, status
 from mindfus.backend.utils import get_current_user_by_session
-from mindfus.dependencies import ACCESS_TOKEN_EXPIRE_MINUTES, database, storage
+from mindfus.dependencies import ACCESS_TOKEN_EXPIRE_SECONDS, database, storage
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -49,7 +49,7 @@ async def authentication(user_form: am.UserPartial, db: AsyncSession = Depends(d
     if not user.verify_password(user_form.password):
         raise credentials_exception
 
-    session_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    session_expires = timedelta(seconds=ACCESS_TOKEN_EXPIRE_SECONDS)
     session_key = uuid4()
 
     await redis_storage.setex(f"session:{session_key}", session_expires, user.email)
@@ -62,6 +62,13 @@ async def authentication(user_form: am.UserPartial, db: AsyncSession = Depends(d
 @app.get("/user")
 async def session(user_email: str = Depends(get_current_user_by_session)):
     return user_email
+
+
+# Проверка существования сессии
+@app.get("/get_users")
+async def session(db: AsyncSession = Depends(database)):
+    users = (await db.execute(select(sm.User))).scalars().all()
+    return  [{'email': user.email} for user in users]
 
 
 # Удаление сессии
