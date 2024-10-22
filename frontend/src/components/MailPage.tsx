@@ -56,14 +56,12 @@ const MailComponent = observer(() =>  {
 
     const renderMessages = () => {
         const messages = selectedFolder === 'inbox' ? inbox : outbox;
-
-
         return messages.map((message, index) => (
             <TableRow key={index} sx={{ cursor: 'pointer' }} >
                 <TableCell onClick={() => handleRowClick(message)} style={{ fontWeight: selectedFolder === 'inbox' && !message.checked ? 'bold' : 'normal' }}>
                     {
-                        // @ts-ignore
-                        selectedFolder === 'inbox' ? message.companion : account.email}
+                        selectedFolder === 'inbox' ? message.companion : message.companion
+                    }
                 </TableCell>
                 <TableCell onClick={() => handleRowClick(message)} style={{ fontWeight: selectedFolder === 'inbox' && !message.checked ? 'bold' : 'normal' }}>
                     {date_converter(message.timestamp)}
@@ -72,9 +70,9 @@ const MailComponent = observer(() =>  {
                     <Checkbox
                         checked={
                             // @ts-ignore
-                        selectedMessages.includes(index)}
+                            selectedMessages.includes(index)}
                         onChange={(e) => {
-                            e.stopPropagation(); // Предотвращаем всплытие события
+                            e.stopPropagation();
                             handleSelect(index);
                         }}
                     />
@@ -82,6 +80,7 @@ const MailComponent = observer(() =>  {
             </TableRow>
         ));
     };
+
 
     const handleCloseDialog = () => {
         setOpenDialog(false);
@@ -104,6 +103,7 @@ const MailComponent = observer(() =>  {
         try {
             await sendMessage(messageContent, recipient);
             handleCloseMessageForm();
+            handleCloseDialog();
         } catch (error) {
             alert('Произошла ошибка при отправке сообщения');
         }

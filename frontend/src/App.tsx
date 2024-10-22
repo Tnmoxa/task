@@ -22,9 +22,10 @@ const App = observer(() => {
             <ResponsiveAppBar/>
             <AccountStatus />
             <Routes>
-                <Route path="/sign-up" element={<RegistrationPage />} />
-                <Route path="/sign-in" element={<AuthorizationPage />} />
+                {account?(<Route path="/sign-up" element={<MailPage />} />):(<Route path="/sign-up" element={<RegistrationPage />} />)}
+                {account?(<Route path="/sign-in" element={<MailPage />} />):(<Route path="/sign-in" element={<AuthorizationPage />} />)}
                 {account?(<Route path="/mail" element={<MailPage />} />):(<Route path="/mail" element={<AuthorizationPage />} />)}
+                {account?(<Route path="/" element={<MailPage />} />):(<Route path="/" element={<AuthorizationPage />} />)}
             </Routes>
         </Router>
     </div>

@@ -1,7 +1,6 @@
 networks:
   mf:
     driver: bridge
-    external: true
 
 services:
   postgresql:
@@ -49,7 +48,7 @@ services:
     networks:
       - mf
     ports:
-      - "80:80"
+      - "8080:8080"
 
   redis:
     image: redis/redis-stack-server:latest

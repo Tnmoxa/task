@@ -39,7 +39,7 @@ async def get_messages(user_email: str = Depends(get_current_user_by_session), d
                 id=message.id,
                 content=message.content,
                 timestamp=message.timestamp,
-                companion=message.sender_mail,
+                companion=message.recipient_mail,
                 checked=message.checked
             ) for message in outbox]}
 

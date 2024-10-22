@@ -16,8 +16,6 @@ const _AccountInfo = observer(({ account, children }: Props) => {
       <div className="grid grid-cols-[auto_1fr_auto] py-2 gap-x-2 text-sm">
         <div>Имя</div>
         <div className="col-span-2 text-right">{account.email}</div>
-        <div>Адрес</div>
-        <div className="col-span-2 text-right">{account.session_key}</div>
       </div>
     </div>
   );

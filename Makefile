@@ -11,3 +11,4 @@ venv:
 	source $(VENV)/bin/activate && pip install nodeenv
 	source $(VENV)/bin/activate && nodeenv -p -n $(NODE_VERSION)
 	source $(VENV)/bin/activate && npm install -g $(PNPM)
+	source $(VENV)/bin/activate && cd backend && SETUPTOOLS_SCM_PRETEND_VERSION="0.1.0" pip install -e .

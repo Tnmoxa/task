@@ -6,14 +6,17 @@ import Button from '@mui/material/Button';
 import Badge from '@mui/material/Badge';
 import MailIcon from '@mui/icons-material/Mail';
 import IconButton from '@mui/material/IconButton';
-import { useNavigate } from 'react-router-dom';
+import {Route, useNavigate} from 'react-router-dom';
 import {accountStore, messageStore} from "../stores";
 import {observer} from "mobx-react-lite";
+import MailPage from "./MailPage";
+import RegistrationPage from "./RegistrationPage";
+import React from "react";
 
 const ResponsiveAppBar = observer(() => {
     const navigate = useNavigate();
     const {inbox} = messageStore
-    const { signOff } = accountStore
+    const { signOff, account } = accountStore
 
     const handleRegistration = () => {
         navigate('/sign-up')
@@ -36,24 +39,27 @@ const ResponsiveAppBar = observer(() => {
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                        <Button
+                        {!account?(
+                        <><Button
                             onClick={handleRegistration}
-                            sx={{ my: 2, color: 'white', display: 'block' }}
+                            sx={{my: 2, color: 'white', display: 'block'}}
                         >
                             Регистрация
-                        </Button>
-                        <Button
+                        </Button><Button
                             onClick={handleAuthorization}
-                            sx={{ my: 2, color: 'white', display: 'block' }}
+                            sx={{my: 2, color: 'white', display: 'block'}}
                         >
                             Войти
-                        </Button>
+                        </Button></>
+                        ):(
                         <Button
                             onClick={handleExit}
                             sx={{ my: 2, color: 'white', display: 'block' }}
                         >
                             Выход
-                        </Button>
+                        </Button>)}
+
+
                     </Box>
                     <Box sx={{ flexGrow: 1 }} />
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>

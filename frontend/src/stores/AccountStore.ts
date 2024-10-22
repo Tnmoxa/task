@@ -24,6 +24,9 @@ export interface AccountStore {
 
   /// Разлогин
   signOff(): void;
+
+  //Проверка сессии
+  checkAccount():void
 }
 
 /// Реализация хранилища акаунта
@@ -39,6 +42,7 @@ class _AccountStore implements AccountStore {
       signOff: action.bound,
       signUp: action.bound,
       signIn: action.bound,
+      checkAccount:action.bound
     });
   }
 
@@ -86,12 +90,27 @@ class _AccountStore implements AccountStore {
     this.update().then();
   }
 
+  checkAccount(){
+    try {
+      const session = sessionStorage.getItem("session");
+      if (session) {
+        const { email, session_key } = JSON.parse(session);
+        fetchAccountInfo(session_key).then()
+      } else {
+        console.warn("No session found during signOff");
+      }
+    } catch (error) {
+      console.error("Cannot sign off account", error);
+      this.signOff()
+      throw error;
+    }
+    this.update().then();
+  }
+
   async update() {
     const session = sessionStorage.getItem("session");
     if (session) {
       try {
-        const { email, session_key } = JSON.parse(session);
-        const a = await fetchAccountInfo(session_key);
         const account = JSON.parse(session)
         runInAction(() => {
           this.account = account;
