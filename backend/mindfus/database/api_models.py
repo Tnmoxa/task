@@ -10,7 +10,8 @@ class MessageResponse(BaseModel):
     id: int
     content: str
     timestamp: datetime
-    companion: str
+    sender: str
+    recipient: str
     checked: bool
 
 

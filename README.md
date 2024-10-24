@@ -28,3 +28,30 @@ $ docker compose up
 
 ## Уведомления через Telegram-бота:
 - Для оповещения пользователей о новых сообщениях, если он офлайн, используется Telegram-бот.
+
+Для работы необходим docker-compose.override.yml с примерно таким содержанием
+
+services:
+  postgresql:
+    build:
+      args:
+        POSTGRESQL_PASSWORD: 23456
+    restart: 'no'
+    ports:
+      - "5432:5432/tcp"
+
+  backend:
+    environment:
+      TOKEN: "TOKEN"
+      DATABASE_URL: "postgresql+asyncpg://postgres:23456@postgresql:5432/mf"
+      REDIS_URL: "redis://redis:6379"
+
+  alembic:
+    environment:
+      SYNC_DATABASE_URL: "postgresql+psycopg2://postgres:23456@postgresql:5432/mf"
+
+  celery:
+    environment:
+      TOKEN: "TOKEN"
+      DATABASE_URL: "postgresql+asyncpg://postgres:23456@postgresql:5432/mf"
+      REDIS_URL: "redis://redis:6379"

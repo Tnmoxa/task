@@ -31,6 +31,6 @@ class Message(Base):
     content: Mapped[str] = mapped_column(nullable=False)
     sender_mail: Mapped[str] = mapped_column(ForeignKey('users.email'), nullable=False)
     recipient_mail: Mapped[str] = mapped_column(ForeignKey('users.email'), nullable=False)
-    timestamp: Mapped[datetime] = mapped_column(default=datetime.now())
+    timestamp: Mapped[datetime] = mapped_column(nullable=False)
 
     checked: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)

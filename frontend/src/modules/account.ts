@@ -14,7 +14,7 @@ export interface AccountType {
 
 export async function fetchAccountInfo(session_key: string) {
     try {
-        const requestObject = new Request(`/api/auth/user?session_key=${session_key}`, {
+        const requestObject = new Request(process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL  + `/api/auth/user?session_key=${session_key}` : `/api/auth/user?session_key=${session_key}`, {
             method: "GET",
         });
         return await fastFetch<AccountInfo>(requestObject);
@@ -27,7 +27,7 @@ export async function fetchAccountInfo(session_key: string) {
 
 export async function fetchAccounts(){
     try {
-        return await fastFetch<{email:string}[]>( `/api/auth/get_users`);
+        return await fastFetch<{email:string}[]>(process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL  + `/api/auth/get_users` :  `/api/auth/get_users`);
     } catch (error) {
         console.error("Cannot get account list", error);
         throw error;
@@ -36,7 +36,7 @@ export async function fetchAccounts(){
 
 export async function fetchAccountCreate(account: AccountType) {
     try {
-        const requestObject = new Request('/api/auth/registration', {
+        const requestObject = new Request(process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL  + `/api/auth/registration` : '/api/auth/registration', {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -52,7 +52,7 @@ export async function fetchAccountCreate(account: AccountType) {
 
 export async function fetchAccountAuthentication(account: {email: string; password: string;}) {
     try {
-        const requestObject = new Request('/api/auth/authentication', {
+        const requestObject = new Request(process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL  + `/api/auth/authentication` : '/api/auth/authentication', {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -69,7 +69,7 @@ export async function fetchAccountAuthentication(account: {email: string; passwo
 export async function fetchAccountDelete(session_key: string) {
 
     try {
-        const requestObject = new Request(`/api/auth/exit?session_key=${session_key}`, {
+        const requestObject = new Request(process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL  + `/api/auth/exit?session_key=${session_key}` : `/api/auth/exit?session_key=${session_key}`, {
             method: "DELETE",
         });
         return await fastFetch<AccountInfo>(requestObject);

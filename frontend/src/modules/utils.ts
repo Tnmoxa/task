@@ -1,5 +1,6 @@
 export function date_converter(timestamp: string | number | Date) {
     const date = new Date(timestamp);
+    date.setHours(date.getHours() + 3);
 
     const day = String(date.getDate()).padStart(2, '0');
     const monthOptions = { month: 'short' };
@@ -9,5 +10,5 @@ export function date_converter(timestamp: string | number | Date) {
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
 
-    return `${hours}:${minutes} ${day} ${month}`
+    return `${hours}:${minutes} ${day} ${month}`;
 }

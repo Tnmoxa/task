@@ -10,12 +10,14 @@ export interface MessageType {
     id: number;
     content: string;
     timestamp: string;
-    companion: string;
+    sender:string;
+    recipient_mail: string;
     checked:boolean
 }
 
 /// Интерфейс хранилища акаунта
 export interface MessageStore {
+    companion: string;
     inbox?: MessageType[];
     outbox?: MessageType[];
     error?: unknown;
@@ -25,16 +27,20 @@ export interface MessageStore {
     checkMessage(id: number):Promise<void>;
 
     deleteMessage(arr: number[]):Promise<void>;
+
+    changeCompanion(companion:string):void
 }
 
 /// Реализация хранилища акаунта
 class _MessageStore implements MessageStore {
+    companion: string = ''
     inbox: MessageType[]  = [];
     outbox: MessageType[] = [];
     error: unknown = undefined;
 
     constructor() {
         makeObservable(this, {
+            companion: observable,
             inbox: observable,
             outbox: observable,
             error: observable,
@@ -42,6 +48,7 @@ class _MessageStore implements MessageStore {
             deleteMessage: action.bound,
             sendMessage: action.bound,
             checkMessage: action.bound,
+            changeCompanion:action.bound
         });
     }
 
@@ -95,16 +102,26 @@ class _MessageStore implements MessageStore {
 
     }
 
+    changeCompanion(companion:string){
+        try {
+            this.companion=companion
+        } catch (error) {
+            console.error("Cannot check message", error);
+            throw error;
+        }
+        this.update().then()
+
+    }
+
     async update() {
         let inbox: MessageType[] = [];
         let outbox: MessageType[] = [];
         const session = sessionStorage.getItem("session");
-        if (session) {
+        if (session && this.companion) {
             try {
                 const { email, session_key } = JSON.parse(session);
-                const res = await fetchMessage(session_key);
-                inbox = res.inbox
-                outbox = res.outbox
+                inbox = await fetchMessage(session_key, this.companion);
+                // outbox = res.outbox
 
             } catch (error) {
                 // @ts-ignore

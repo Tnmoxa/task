@@ -1,5 +1,6 @@
+from datetime import datetime, timedelta
 from select import select
-from typing import Any
+from typing import Any, List
 
 import mindfus.database.api_models as am
 import mindfus.database.storage_models as sm
@@ -10,6 +11,7 @@ from mindfus.backend.utils import get_current_user_by_session, get_active_sessio
 from mindfus.celery.celery_app import send_tg_message
 from mindfus.dependencies import database, storage
 from sqlalchemy import delete
+from sqlalchemy import and_, or_
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -17,31 +19,29 @@ app = FastAPI()
 
 
 # Получение полученных и отправленных сообщений
-@app.get("/")
-async def get_messages(user_email: str = Depends(get_current_user_by_session), db: AsyncSession = Depends(database)) -> \
-        dict[str, list[Any]]:
-    inbox = (await db.execute(
-        select(sm.Message).where(sm.Message.recipient_mail == user_email)
-    )).scalars().all()
-    outbox = (await db.execute(
-        select(sm.Message).where(sm.Message.sender_mail == user_email)
-    )).scalars().all()
+@app.get("/get_messages")
+async def get_messages(companion: str, user_email: str = Depends(get_current_user_by_session),
+                       db: AsyncSession = Depends(database)) -> \
+        list[am.MessageResponse]:
+    inbox = await db.execute(
+        select(sm.Message).where(
+            or_(
+                and_(sm.Message.sender_mail == user_email, sm.Message.recipient_mail == companion),
+                and_(sm.Message.sender_mail == companion, sm.Message.recipient_mail == user_email)
+            )
+        ).order_by(sm.Message.timestamp.asc())
+    )
 
-    return {'inbox': [am.MessageResponse(
+    inbox = inbox.scalars().all()
+
+    return [am.MessageResponse(
         id=message.id,
         content=message.content,
         timestamp=message.timestamp,
-        companion=message.sender_mail,
-        checked=message.checked
-    ) for message in inbox],
-        'outbox': [
-            am.MessageResponse(
-                id=message.id,
-                content=message.content,
-                timestamp=message.timestamp,
-                companion=message.recipient_mail,
-                checked=message.checked
-            ) for message in outbox]}
+        sender=message.sender_mail,
+        recipient=message.recipient_mail,
+        checked=True
+    ) for message in inbox]
 
 
 # Подтверждение прочтения сообщения
@@ -73,7 +73,8 @@ async def save_messages(message: am.MessageRequest, user_email: str = Depends(ge
     new_message = sm.Message(
         content=message.content,
         sender_mail=user_email,
-        recipient_mail=message.recipient
+        recipient_mail=message.recipient,
+        timestamp=datetime.now()
     )
 
     if not (await get_active_sessions(message.recipient, redis_storage)):
@@ -87,7 +88,6 @@ async def save_messages(message: am.MessageRequest, user_email: str = Depends(ge
 @app.delete("/")
 async def delete_messages(message_ids: list[int], user_email: str = Depends(get_current_user_by_session),
                           db: AsyncSession = Depends(database)):
-    # Выбираем сообщения, принадлежащие текущему пользователю, и проверяем их наличие
     messages = (await db.execute(
         select(sm.Message)
         .where(sm.Message.id.in_(message_ids))
